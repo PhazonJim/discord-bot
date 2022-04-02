@@ -7,6 +7,7 @@ import discord
 
 cache = utils.loadCache()
 
+
 def cache_user(author):
     global cache
     if str(author.id) not in cache.keys():
@@ -30,8 +31,10 @@ def user_has_cooldown(author):
     if time_left >= 0:
         return time_left
 
+
 def set_cooldown(author):
     cache[str(author.id)]["last_command_timestamp"] = int(time.time())
+
 
 async def lootbox(message, client, guild):
     author = message.author
@@ -60,6 +63,7 @@ async def lootbox(message, client, guild):
         f"You loser, you're on cooldown for {cooldown} more seconds."
     )
 
+
 async def handle_slowmode_more(client, message):
     chet_channel = client.get_channel(336997071544385536)
     channel = message.channel
@@ -72,6 +76,7 @@ async def handle_slowmode_more(client, message):
     await channel.send(
         f"Oh boy, {author.display_name} updated slowmode in chet to {delay} seconds, thank you!"
     )
+
 
 async def handle_slowmode_less(client, message):
     chet_channel = client.get_channel(336997071544385536)
@@ -89,6 +94,7 @@ async def handle_slowmode_less(client, message):
         await channel.send(
             f"{author.display_name}, you rolled for a slowmode decrease but its already dead! Try again."
         )
+
 
 async def handle_timeout(message):
     author = message.author
@@ -114,7 +120,9 @@ async def handle_nothing(message):
     num = cache[str(author.id)]["medals"]
     gold, rem = divmod(num, 100)
     silver, bronze = divmod(rem, 10)
-    medals = gold*":first_place:"+silver*":second_place:"+bronze*":third_place:"
+    medals = (
+        gold * ":first_place:" + silver * ":second_place:" + bronze * ":third_place:"
+    )
     await message.channel.send(
         f"{author.display_name}, you didn't win anything, but here is a nice medal for trying: :third_place:\nHere is your collection: {medals}"
     )
@@ -137,12 +145,22 @@ async def handle_black_role(message, role):
         )
         await author.remove_role(role)
 
+
 async def google(message):
-    query = message.content.lower().split(' ')
+    query = message.content.lower().split(" ")
     safe_check = query[2]
     if len(query) <= 5:
-        query = '+'.join(query)
-        if safe_check in ["he", "she", "that", "it", "doing", "saying", "thinking", "acting"]:
+        query = "+".join(query)
+        if safe_check in [
+            "he",
+            "she",
+            "that",
+            "it",
+            "doing",
+            "saying",
+            "thinking",
+            "acting",
+        ]:
             return
         template = f"https://www.google.com/search?q={query}"
         await message.channel.send(template)
