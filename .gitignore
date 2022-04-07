@@ -2,3 +2,4 @@
 .env
 cache.json
 __pycache__/
+temp/
