@@ -1,7 +1,7 @@
 # main.py
 import os
 
-import discord 
+import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -11,8 +11,9 @@ from commands.google import google
 load_dotenv()
 TOKEN = os.environ.get("DISCORD_TOKEN")
 GUILD = os.environ.get("DISCORD_GUILD")
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="~", description="Simple discord bot", intents=intents)
+bot = commands.Bot(
+    command_prefix="~", description="Simple discord bot", intents=discord.Intents.all()
+)
 
 # @bot.event
 # async def on_message(message):
@@ -22,13 +23,16 @@ bot = commands.Bot(command_prefix="~", description="Simple discord bot", intents
 #     ):
 #         await google(message)
 
+
 @bot.event
 async def on_ready():
     print(GUILD)
     guild = discord.utils.get(bot.guilds, name=GUILD)
     print(
         f"{bot.user} is connected to the following guild:\n"
-        f"{guild.name}(id: {guild.id})")
+        f"{guild.name}(id: {guild.id})"
+    )
+
 
 if __name__ == "__main__":
     bot.add_cog(Bingus(bot))

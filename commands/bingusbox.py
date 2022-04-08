@@ -6,42 +6,45 @@ from db import db
 
 USER_TABLE = os.environ.get("USER_TABLE")
 
-class Bingus(commands.Cog):
-  """ All Bingus commands """
-  @commands.cooldown(1, 10, commands.BucketType.user)
-  @commands.command(
-    name="bingusbox",
-    brief="Take a spin and see what comes out the other end",
-    help="Use this command to earn pain"
-  )
-  async def _bingusbox(self, ctx):
-    res = random.choices(
-        population=["slowmodeon", "slowmodeoff", "timeout", "nothing", "black"],
-        #weights=[0.04, 0.04, 0.20, 0.70, 0.02],
-        weights=[0.0, 0.0, 0.0, 0.0, 1.0],
-        k=1,
-    )[0]
-    if res == "slowmodeon":
-        await handle_slowmode_more(ctx)
-    if res == "slowmodeoff":
-        await handle_slowmode_less(ctx)
-    if res == "timeout":
-        await handle_timeout(ctx)
-    if res == "nothing":
-        await handle_nothing(ctx)
-    if res == "black":
-        role_id = int(os.environ.get("SECRET_ROLE_ID"))
-        role = ctx.guild.get_role(role_id)
-        await handle_black_role(ctx, role)
-    return
 
-  @_bingusbox.error
-  async def _bingusbox_error(self, ctx, error):
-      print(error)
-      message = "Foo"
-      if isinstance(error, commands.CommandOnCooldown):
-          message = f"You absolute dingus, you have {round(error.retry_after, 2)} seconds left on your cooldown."
-      await ctx.send(message, delete_after=5)
+class Bingus(commands.Cog):
+    """All Bingus commands"""
+
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.command(
+        name="bingusbox",
+        brief="Take a spin and see what comes out the other end",
+        help="Use this command to earn pain",
+    )
+    async def _bingusbox(self, ctx):
+        res = random.choices(
+            population=["slowmodeon", "slowmodeoff", "timeout", "nothing", "black"],
+            # weights=[0.04, 0.04, 0.20, 0.70, 0.02],
+            weights=[0.0, 0.0, 0.0, 0.0, 1.0],
+            k=1,
+        )[0]
+        if res == "slowmodeon":
+            await handle_slowmode_more(ctx)
+        if res == "slowmodeoff":
+            await handle_slowmode_less(ctx)
+        if res == "timeout":
+            await handle_timeout(ctx)
+        if res == "nothing":
+            await handle_nothing(ctx)
+        if res == "black":
+            role_id = int(os.environ.get("SECRET_ROLE_ID"))
+            role = ctx.guild.get_role(role_id)
+            await handle_black_role(ctx, role)
+        return
+
+    @_bingusbox.error
+    async def _bingusbox_error(self, ctx, error):
+        print(error)
+        message = "Foo"
+        if isinstance(error, commands.CommandOnCooldown):
+            message = f"You absolute dingus, you have {round(error.retry_after, 2)} seconds left on your cooldown."
+        await ctx.send(message, delete_after=5)
+
 
 def add_medal(user_id):
     table = db[USER_TABLE]
@@ -50,7 +53,7 @@ def add_medal(user_id):
         db[USER_TABLE].insert(dict(user_id=user_id, medal_count=1))
         return 1
     medal_count = user.get("medal_count", 0)
-    medal_count = medal_count+1 if medal_count else 1
+    medal_count = medal_count + 1 if medal_count else 1
     db[USER_TABLE].update(dict(user_id=user_id, medal_count=medal_count), ["user_id"])
     return medal_count
 
@@ -62,9 +65,12 @@ def add_punishment(user_id):
         db[USER_TABLE].insert(dict(user_id=user_id, punishment_count=1))
         return 1
     punishment_count = user.get("punishment_count", 0)
-    punishment_count = punishment_count+1 if punishment_count else 1
-    db[USER_TABLE].update(dict(user_id=user_id, punishment_count=punishment_count), ["user_id"])
+    punishment_count = punishment_count + 1 if punishment_count else 1
+    db[USER_TABLE].update(
+        dict(user_id=user_id, punishment_count=punishment_count), ["user_id"]
+    )
     return punishment_count
+
 
 async def handle_slowmode_more(ctx):
     chet_channel_id = int(os.environ.get("CHET_CHANNEL_ID"))
