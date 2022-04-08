@@ -19,8 +19,7 @@ class Bingus(commands.Cog):
     async def _bingusbox(self, ctx):
         res = random.choices(
             population=["slowmodeon", "slowmodeoff", "timeout", "nothing", "black"],
-            # weights=[0.04, 0.04, 0.20, 0.70, 0.02],
-            weights=[0.0, 0.0, 0.0, 0.0, 1.0],
+            weights=[0.04, 0.04, 0.20, 0.70, 0.02],
             k=1,
         )[0]
         if res == "slowmodeon":
