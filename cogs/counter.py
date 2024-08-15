@@ -1,10 +1,15 @@
-import re
+from __future__ import annotations
 
+import re
+from typing import TYPE_CHECKING
 from discord.ext import commands
 from sympy import sympify
-
+from db import LOCAL_DATABASE
 from cogs.base import Bingus
 
+if TYPE_CHECKING:
+    import dataset
+    from discord import Message
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Counter(bot))
@@ -15,9 +20,7 @@ class Counter(Bingus):
 
     def __init__(self, bot: commands.Bot):
         super().__init__(bot=bot)
-        self.next_number = 1
-        self.record_number = 0
-        self.record_message = None
+        self.counter_table: dataset.Table = LOCAL_DATABASE["counts"]
 
     # @punish_timeouts
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -29,21 +32,82 @@ class Counter(Bingus):
     async def _binguscount(self, ctx: commands.Context, *args):
         formula = " ".join(args)
         result = re.sub("[^0-9+-.()*/^ ]", "", formula)
-        result = sympify(formula)
-        if result == self.next_number:
-            if result > self.record_number:
-                self.record_number = result
+        result = int(sympify(formula))
+        next_number = self.get_next_number(ctx=ctx)
+        record_number = self.get_record_number(ctx=ctx)
+        if result == next_number:
+            if result > record_number:
+                self.update_record_number(ctx=ctx, value=result)
                 await ctx.message.add_reaction("🏆")
-                if self.record_message:
-                    await self.record_message.clear_reaction("🏆")
-                self.record_message = ctx.message
-            self.next_number += 1
+                record_message = await self.get_record_message(ctx=ctx)
+                if record_message:
+                    await record_message.clear_reaction("🏆")
+                self.update_record_message(ctx=ctx)
+            self.update_next_number(ctx=ctx, value=next_number+1)
             await ctx.message.add_reaction("✅")
         else:
-            self.next_number = 1
+            self.update_next_number(ctx=ctx, value=1)
             await ctx.message.add_reaction("❌")
-            await ctx.message.reply(f"Wow someone is bad at math... Previous record: {self.record_number}", mention_author=False)
+            await ctx.message.reply(f"Wow someone is bad at math... Previous record: {record_number}", mention_author=False)
 
     @_binguscount.error
     async def _binguscount_error(self, ctx: commands.Context, error):
         await self._bingus_error(ctx=ctx, error=error)
+
+    def get_next_number(self, ctx: commands.Context) -> int:
+        guild = self.counter_table.find_one(guild_id=ctx.guild.id)
+        if not guild:
+            self.counter_table.insert(dict(
+                guild_id=ctx.guild.id,
+                next_number=1,
+                record_number=0,
+                record_message=None
+            ))
+            return 1
+        return guild.get("next_number")
+
+    def update_next_number(self, ctx: commands.Context, value: int):
+        self.counter_table.update(dict(
+            guild_id=ctx.guild.id,
+            next_number=value
+        ), ["guild_id"])
+
+    def get_record_number(self, ctx: commands.Context) -> int:
+        guild = self.counter_table.find_one(guild_id=ctx.guild.id)
+        if not guild:
+            self.counter_table.insert(dict(
+                guild_id=ctx.guild.id,
+                next_number=1,
+                record_number=0,
+                record_message=None
+            ))
+            return 0
+        return guild.get("record_number")
+
+    def update_record_number(self, ctx: commands.Context, value: int):
+        self.counter_table.update(dict(
+            guild_id=ctx.guild.id,
+            record_number=value
+        ), ["guild_id"])
+
+    async def get_record_message(self, ctx: commands.Context) -> Message:
+        guild = self.counter_table.find_one(guild_id=ctx.guild.id)
+        if not guild:
+            self.counter_table.insert(dict(
+                guild_id=ctx.guild.id,
+                next_number=1,
+                record_number=0,
+                record_message=None
+            ))
+            return None
+        message_id = guild.get("record_message")
+        if not message_id:
+            return None
+        message = await ctx.fetch_message(message_id)
+        return message
+
+    def update_record_message(self, ctx: commands.Context):
+        self.counter_table.update(dict(
+            guild_id=ctx.guild.id,
+            record_message=ctx.message.id
+        ), ["guild_id"])
