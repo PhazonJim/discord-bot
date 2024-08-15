@@ -1,5 +1,7 @@
 .venv
 .env
+.vscode
 cache.json
 __pycache__/
 temp/
+.ruff_cache

@@ -1,4 +1,5 @@
 import os
+
 import dataset
 from dotenv import load_dotenv
 
@@ -11,4 +12,4 @@ db_path = os.path.join(os.path.dirname(__file__), TEMP_PATH)
 if not os.path.isdir(db_path):
     os.mkdir(db_path)
 
-db = dataset.connect(f"sqlite:///{db_path}/{DB_NAME}.db")
+LOCAL_DATABASE = dataset.connect(f"sqlite:///{db_path}/{DB_NAME}.db")
