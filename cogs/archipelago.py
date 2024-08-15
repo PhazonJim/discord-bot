@@ -12,6 +12,7 @@ TEST_GUILD_ID = int(os.environ.get("TEST_GUILD_ID"))
 ARCHIPELAGO_GUILD_ID = int(os.environ.get("ARCHIPELAGO_GUILD_ID"))
 CHECKS_CHANNEL_ID = int(os.environ.get("CHECKS_CHANNEL_ID"))
 
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(Archipelago(bot))
 
@@ -20,7 +21,7 @@ class Archipelago(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.get_latest_info.start()
-        self.tracker_url = "https://archipelago.gg/sphere_tracker/wWv6vLGGQ9yOyB9ZzbUB9A" #TODO Automatically grab this somehow. 
+        self.tracker_url = "https://archipelago.gg/sphere_tracker/wWv6vLGGQ9yOyB9ZzbUB9A"  # TODO Automatically grab this somehow.
         self.init = True
 
     def cog_unload(self):
