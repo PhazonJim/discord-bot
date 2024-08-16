@@ -71,6 +71,7 @@ class Gamble(Bingus):
 
     async def handle_black_role(self, ctx: commands.Context):
         role = ctx.guild.get_role(self.secret_role_id)
+        print(role)
         if ctx.author not in role.members:
             for member in role.members:
                 await member.remove_roles(role)
