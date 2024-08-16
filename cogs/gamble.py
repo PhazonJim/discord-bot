@@ -75,10 +75,10 @@ class Gamble(Bingus):
         if ctx.author not in role.members:
             for member in role.members:
                 await member.remove_roles(role)
-                await ctx.send(f"{ctx.author.mention} has stolen the highly cherished black role from {member.display_name}!")
+                await ctx.send(f"{ctx.author.mention} has stolen the highly cherished Blahaj Blast role from {member.display_name}!")
             await ctx.author.add_roles(role)
         else:
-            await ctx.send(f"{ctx.author.mention}, you have been stripped of the black role. Better get rollin.")
+            await ctx.send(f"{ctx.author.mention}, you have been stripped of the Blahaj Blast. Better get rollin.")
             await ctx.author.remove_roles(role)
 
     def add_punishment(self, user_id: int) -> int:
