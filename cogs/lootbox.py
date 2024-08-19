@@ -52,9 +52,11 @@ class Lootbox(Bingus):
         bad_args_message = "You must use this command with either `help`, `check`, `swap`, `clear`, or `spy`"
         if len(args) != 1:
             await ctx.message.reply(bad_args_message, mention_author=False)
+            return
         option = args[0]
         if option not in ["help", "check", "swap", "clear", "spy"]:
             await ctx.message.reply(bad_args_message, mention_author=False)
+            return
         else:
             if option == "help":
                 # TODO : Handle help
