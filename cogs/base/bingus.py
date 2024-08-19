@@ -36,7 +36,8 @@ class Bingus(commands.Cog):
             seconds_left = increase_timeout(ctx.author.id)
             if seconds_left <= 61:
                 message = f"Using commands while in timeout has earned you 60 more seconds on your timeout {ctx.author.mention} - you have {seconds_left} seconds left. Additional messages will not be acknowledged until the timeout is over."
-            await ctx.send(message)
+                await ctx.send(message)
+            return
         else:
             await ctx.send(message, delete_after=5.0)
 
