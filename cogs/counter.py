@@ -33,6 +33,8 @@ class Counter(Bingus):
         help="Use this command to earn pain",
     )
     async def _binguscount(self, ctx: commands.Context, *args):
+        if ctx.channel.id != self.botspam_channel_id:
+            return
         formula = " ".join(args)
         result = re.sub("[^0-9+-.()*/^ ]", "", formula)
         result = int(sympify(formula))

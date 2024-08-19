@@ -27,6 +27,8 @@ class Gamble(Bingus):
     )
     @punish_timeouts()
     async def _bingusbox(self, ctx: commands.Context):
+        if ctx.channel.id != self.botspam_channel_id:
+            return
         weights = [0.04, 0.04, 0.20, 0.70, 0.02]
         res = random.choices(
             population=["slowmodeon", "slowmodeoff", "timeout", "nothing", "black"],

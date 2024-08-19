@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from discord.ext import commands
-
+import os
 from cogs.base.errors import TimeOutException
 from db import LOCAL_DATABASE
 
@@ -19,6 +19,7 @@ class Bingus(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.botspam_channel_id = int(os.environ.get("BOTSPAM_CHANNEL_ID"))
         self.user_table: dataset.Table = LOCAL_DATABASE["user_data"]
 
     @commands.Cog.listener()
