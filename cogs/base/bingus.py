@@ -34,9 +34,12 @@ class Bingus(commands.Cog):
             await ctx.send(message, ephemeral=True, delete_after=20)
         elif isinstance(error, TimeOutException):
             seconds_left = increase_timeout(ctx.author.id)
-            if float(seconds_left) <= 61.0:
-                message = f"Using commands while in timeout has earned you 60 more seconds on your timeout {ctx.author.mention} - you have {seconds_left} seconds left. Additional messages will not be acknowledged until the timeout is over."
-                await ctx.send(message)
+            try:
+                if float(seconds_left) <= 61.0:
+                    message = f"Using commands while in timeout has earned you 60 more seconds on your timeout {ctx.author.mention} - you have {seconds_left} seconds left. Additional messages will not be acknowledged until the timeout is over."
+                    await ctx.send(message)
+            except Exception as e:
+                print(e)
             return
         else:
             await ctx.send(message, delete_after=5.0)
