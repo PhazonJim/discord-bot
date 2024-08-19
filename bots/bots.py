@@ -37,6 +37,7 @@ async def reload_cogs(interaction: discord.Interaction):
         await BIG_TUNA.reload_extension("cogs.archipelago")
         await BIG_TUNA.reload_extension("cogs.counter")
         await BIG_TUNA.reload_extension("cogs.gamble")
+        await BIG_TUNA.reload_extension("cogs.lootbox")
         print("Cogs Reloaded")
         await interaction.response.send_message("Cogs reloaded!")
     else:
@@ -49,5 +50,6 @@ async def setup_hook() -> None:
     await BIG_TUNA.load_extension("cogs.archipelago")
     await BIG_TUNA.load_extension("cogs.counter")
     await BIG_TUNA.load_extension("cogs.gamble")
+    await BIG_TUNA.load_extension("cogs.lootbox")
     await BIG_TUNA.tree.sync()
     print("Done setting up...")
