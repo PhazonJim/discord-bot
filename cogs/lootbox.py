@@ -33,7 +33,7 @@ class Lootbox(Bingus):
         if ctx.channel.id != self.botspam_channel_id: # not in botspam, ignore and return immediately.
             return
         # TODO: Add lootbox command logic here
-        ctx.message.reply("This command is a WIP")
+        await ctx.message.reply("This command is a WIP")
 
     @_lootbox.error # In case of an error (such as cooldowns), we are going to fallback to Bingus' error handling
     async def _bingusbox_error(self, ctx: commands.Context, error):
@@ -51,10 +51,10 @@ class Lootbox(Bingus):
             return
         bad_args_message = "You must use this command with either `help`, `check`, `swap`, `clear`, or `spy`"
         if len(args) != 1:
-            ctx.message.reply(bad_args_message, mention_author=False)
+            await ctx.message.reply(bad_args_message, mention_author=False)
         option = args[0]
         if option not in ["help", "check", "swap", "clear", "spy"]:
-            ctx.message.reply(bad_args_message, mention_author=False)
+            await ctx.message.reply(bad_args_message, mention_author=False)
         else:
             if option == "help":
                 # TODO : Handle help
@@ -71,7 +71,7 @@ class Lootbox(Bingus):
             if option == "spy":
                 #TODO: Handle spy
                 pass
-        ctx.message.reply("This command is a work in progress.")
+        await ctx.message.reply("This command is a work in progress.")
 
     @_colourbank.error # In case of an error (such as cooldowns), we are going to fallback to Bingus' error handling
     async def _bingusbox_error(self, ctx: commands.Context, error):
