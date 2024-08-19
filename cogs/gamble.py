@@ -78,6 +78,8 @@ class Gamble(Bingus):
             for member in role.members:
                 await member.remove_roles(role)
                 await ctx.send(f"{ctx.author.mention} has stolen the highly cherished Blahaj Blast role from {member.display_name}!")
+                return
+            await ctx.send(f"{ctx.author.mention}, you have been earned the Blahaj Blast role!")
             await ctx.author.add_roles(role)
         else:
             await ctx.send(f"{ctx.author.mention}, you have been stripped of the Blahaj Blast. Better get rollin.")
