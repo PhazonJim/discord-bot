@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING
 from discord.ext import commands
 from sympy import sympify
 
-from cogs.base import Bingus
-from db import LOCAL_DATABASE
+from cogs.base import BaseCog
 
 if TYPE_CHECKING:
     import dataset
@@ -18,12 +17,12 @@ async def setup(bot: commands.Bot):
     await bot.add_cog(Counter(bot))
 
 
-class Counter(Bingus):
+class Counter(BaseCog):
     """All Bingus commands"""
 
     def __init__(self, bot: commands.Bot):
         super().__init__(bot=bot)
-        self.counter_table: dataset.Table = LOCAL_DATABASE["counts"]
+        self.counter_table: dataset.Table = bot.LOCAL_DATABASE["counts"]
 
     # @punish_timeouts
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -57,7 +56,7 @@ class Counter(Bingus):
 
     @_binguscount.error
     async def _binguscount_error(self, ctx: commands.Context, error):
-        await self._bingus_error(ctx=ctx, error=error)
+        await self._base_error(ctx=ctx, error=error)
 
     def get_next_number(self, ctx: commands.Context) -> int:
         guild = self.counter_table.find_one(guild_id=ctx.guild.id)

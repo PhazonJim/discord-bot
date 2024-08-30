@@ -1,37 +1,32 @@
-import os
-
 import discord
 import requests
 from bs4 import BeautifulSoup
 from discord import app_commands
 from discord.ext import commands, tasks
 
+from cogs.base import BaseCog
 from models import REGISTRY, Check
-
-TEST_GUILD_ID = int(os.environ.get("TEST_GUILD_ID"))
-ARCHIPELAGO_GUILD_ID = int(os.environ.get("ARCHIPELAGO_GUILD_ID"))
-CHECKS_CHANNEL_ID = int(os.environ.get("CHECKS_CHANNEL_ID"))
 
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Archipelago(bot))
 
 
-class Archipelago(commands.Cog):
+class Archipelago(BaseCog):
+    TEST_GUILD_ID = None
+    ARCHIPELAGO_GUILD_ID = None
+
     def __init__(self, bot: commands.Bot):
-        self.bot = bot
-        self.get_latest_info.start()
-        self.tracker_url = "https://archipelago.gg/sphere_tracker/wWv6vLGGQ9yOyB9ZzbUB9A"  # TODO Automatically grab this somehow.
+        super().__init__(bot=bot)
+        self.tracker_url = self.config.get("tracker_url")
+        self.checks_channel_id = self.config.get("checks_channel_id")
+        self.ARCHIPELAGO_GUILD_ID = self.config.get("archipelago_guild_id")
+        self.TEST_GUILD_ID = self.config.get("test_guild_id")
         self.init = True
+        self.get_latest_info.start()
 
     def cog_unload(self):
         self.get_latest_info.cancel()
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{self.bot.user} is connected to the following guild(s):\n")
-        for guild in self.bot.guilds:
-            print(f"{guild.name}(id: {guild.id})")
 
     @tasks.loop(seconds=120)
     async def get_latest_info(self):
@@ -64,7 +59,7 @@ class Archipelago(commands.Cog):
 
     async def handle_new_checks(self, new_checks: list[Check]) -> None:
         if new_checks:
-            channel = self.bot.get_channel(CHECKS_CHANNEL_ID)
+            channel = self.bot.get_channel(self.checks_channel_id)
             new_checks.sort(key=lambda x: x.receiver)
             for check in new_checks:
                 message = f"**{check.receiver}** received **{check.item}** from **{check.finder}** (**{check.location}**)"

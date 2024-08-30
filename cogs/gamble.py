@@ -1,23 +1,22 @@
-import os
 import random
 from datetime import datetime, timedelta
 
 from discord.ext import commands
 
-from cogs.base import Bingus, punish_timeouts
+from cogs.base import BaseCog, punish_timeouts
 
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Gamble(bot))
 
 
-class Gamble(Bingus):
+class Gamble(BaseCog):
     """All Bingus commands"""
 
     def __init__(self, bot: commands.Bot):
         super().__init__(bot=bot)
-        self.chet_channel_id = int(os.environ.get("CHET_CHANNEL_ID"))
-        self.secret_role_id = int(os.environ.get("SECRET_ROLE_ID"))
+        self.chet_channel_id = self.config.get("chet_channel_id")
+        self.secret_role_id = self.config.get("secret_role_id")
 
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.command(
@@ -49,7 +48,7 @@ class Gamble(Bingus):
 
     @_bingusbox.error
     async def _bingusbox_error(self, ctx: commands.Context, error):
-        await self._bingus_error(ctx=ctx, error=error)
+        await self._base_error(ctx=ctx, error=error)
 
     async def handle_timeout(self, ctx: commands.Context):
         try:

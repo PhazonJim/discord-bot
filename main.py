@@ -3,9 +3,10 @@ import os
 
 from dotenv import load_dotenv
 
+from bots import BIG_TUNA
+
 load_dotenv(override=True)
 
-from bots import BIG_TUNA
 
 TOKEN = os.environ.get("DISCORD_TOKEN")
 
