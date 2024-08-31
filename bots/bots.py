@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-
+from db import LOCAL_DATABASE
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -12,6 +12,7 @@ BIG_TUNA = commands.Bot(
     intents=intents,
 )
 
+BIG_TUNA.LOCAL_DATABASE = LOCAL_DATABASE
 
 @BIG_TUNA.tree.command()
 @commands.is_owner()

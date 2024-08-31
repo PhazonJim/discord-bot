@@ -22,7 +22,7 @@ class Counter(BaseCog):
 
     def __init__(self, bot: commands.Bot):
         super().__init__(bot=bot)
-        self.counter_table: dataset.Table = bot.LOCAL_DATABASE["counts"]
+        self.counter_table: dataset.Table = self.bot.LOCAL_DATABASE["counts"]
 
     # @punish_timeouts
     @commands.cooldown(1, 10, commands.BucketType.user)

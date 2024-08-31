@@ -5,3 +5,4 @@ cache.json
 __pycache__/
 temp/
 .ruff_cache
+test.py

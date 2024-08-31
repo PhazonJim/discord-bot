@@ -6,7 +6,7 @@ import yaml
 from discord.ext import commands
 
 from cogs.base.errors import TimeOutException
-from db import LOCAL_DATABASE as LDB
+
 
 if TYPE_CHECKING:
     import dataset
@@ -18,24 +18,21 @@ async def setup(bot: commands.Bot):
 
 class BaseCog(commands.Cog):
     """Base Cog Class"""
-
-    LOCAL_DATABASE = LDB  # TODO I Hate this, need to fix it later
-
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.config = self.load_configs()
         self.botspam_channel_id = self.config.get("botspam_channel_id")
-        self.user_table: dataset.Table = self.LOCAL_DATABASE["user_data"]
+        self.user_table: dataset.Table = self.bot.LOCAL_DATABASE["user_data"]
 
     def load_configs(self) -> dict[str, Any]:
         base_config_path = pathlib.Path("./configs/base.yaml").absolute()
         with open(base_config_path) as base_config:
-            config = yaml.load(base_config)
+            config = yaml.safe_load(base_config)
         if self.__class__.__name__ == "BaseCog":
             return config
         subclass_config_path = pathlib.Path(f"./configs/{self.__class__.__name__.lower()}.yaml")
         with open(subclass_config_path) as subclass_config:
-            config.update(yaml.load(subclass_config))
+            config.update(yaml.safe_load(subclass_config))
             return config
 
     @commands.Cog.listener()
@@ -61,7 +58,7 @@ class BaseCog(commands.Cog):
             await ctx.send(message, delete_after=5.0)
 
     def increase_timeout(self, user_id: int):
-        user_table: dataset.Table = self.LOCAL_DATABASE["user_data"]
+        user_table: dataset.Table = self.bot.LOCAL_DATABASE["user_data"]
         user = user_table.find_one(user_id=user_id)
         if user:
             timeout_until = user.get("timeout_until", 0)
@@ -71,8 +68,8 @@ class BaseCog(commands.Cog):
             return (new_timeout - datetime.now()).seconds
 
 
-def author_in_timeout(user_id: int) -> bool:
-    user_table: dataset.Table = BaseCog.LOCAL_DATABASE["user_data"]
+def author_in_timeout(user_id: int, bot: commands.Bot) -> bool:
+    user_table: dataset.Table = bot.LOCAL_DATABASE["user_data"]
     user = user_table.find_one(user_id=user_id)
     if not user:
         return False
@@ -86,7 +83,7 @@ def author_in_timeout(user_id: int) -> bool:
 
 def punish_timeouts():
     async def check_timeout(ctx: commands.Context):
-        if author_in_timeout(ctx.author.id):
+        if author_in_timeout(ctx.author.id, ctx.bot):
             raise TimeOutException("User is in timeout!")
         return True
 

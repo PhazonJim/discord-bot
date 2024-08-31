@@ -5,23 +5,21 @@ from discord import app_commands
 from discord.ext import commands, tasks
 
 from cogs.base import BaseCog
+from configs.config import CONFIG
 from models import REGISTRY, Check
 
+TEST_GUILD_ID = CONFIG.get("test_guild_id")
+ARCHIPELAGO_GUILD_ID = CONFIG.get("archipelago_guild_id")
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Archipelago(bot))
 
 
 class Archipelago(BaseCog):
-    TEST_GUILD_ID = None
-    ARCHIPELAGO_GUILD_ID = None
-
     def __init__(self, bot: commands.Bot):
         super().__init__(bot=bot)
         self.tracker_url = self.config.get("tracker_url")
         self.checks_channel_id = self.config.get("checks_channel_id")
-        self.ARCHIPELAGO_GUILD_ID = self.config.get("archipelago_guild_id")
-        self.TEST_GUILD_ID = self.config.get("test_guild_id")
         self.init = True
         self.get_latest_info.start()
 

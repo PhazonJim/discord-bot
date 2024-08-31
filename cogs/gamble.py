@@ -1,4 +1,6 @@
 import random
+import requests
+
 from datetime import datetime, timedelta
 
 from discord.ext import commands
@@ -28,14 +30,14 @@ class Gamble(BaseCog):
     async def _bingusbox(self, ctx: commands.Context):
         if ctx.channel.id != self.botspam_channel_id:
             return
-        weights = [0.04, 0.04, 0.20, 0.70, 0.02]
+        weights = [0.15, 0.00, 0.15, 0.69, 0.01]
         res = random.choices(
-            population=["slowmodeon", "slowmodeoff", "timeout", "nothing", "black"],
+            population=["facts", "slowmodeoff", "timeout", "nothing", "black"],
             weights=weights,
             k=1,
         )[0]
-        if res == "slowmodeon":
-            await self.handle_nothing(ctx)
+        if res == "facts":
+            await self.handle_facts(ctx)
         if res == "slowmodeoff":
             await self.handle_nothing(ctx)
         if res == "timeout":
@@ -60,6 +62,10 @@ class Gamble(BaseCog):
             await ctx.send(
                 f"{ctx.author.mention} has won a timeout! But I wasn't able to put them in one. Instead they earned a :poop:\nLook at their nasty collection: {total_punishments*':poop:'}"
             )
+
+    async def handle_facts(self, ctx: commands.Context):
+        url = requests.get("https://en.wikipedia.org/wiki/Special:Random").url
+        await ctx.reply(f"Your prize for gambling is... useless knowledge!\n{url}", mention_author=False)
 
     async def handle_nothing(self, ctx: commands.Context):
         total_medals = self.add_medal(user_id=ctx.author.id)
